@@ -77,3 +77,37 @@ CREATE TABLE IF NOT EXISTS clean_energy (
     price_day_ahead                       FLOAT,
     price_actual                          FLOAT
 );
+
+-- NORMALIZED TABLE 1: Energy source lookup
+-- One row per energy source type
+-- is_renewable flag allows instant filtering without hardcoding source names
+CREATE TABLE IF NOT EXISTS energy_source (
+    source_id    INT AUTO_INCREMENT PRIMARY KEY,
+    source_name  VARCHAR(100) NOT NULL UNIQUE,
+    is_renewable BOOLEAN NOT NULL
+);
+
+-- NORMALIZED TABLE 2: One row per hour
+-- Stores grid-level measurements: load and price
+-- These are not tied to any specific source so they belong here
+CREATE TABLE IF NOT EXISTS hourly_snapshot (
+    snapshot_id         INT AUTO_INCREMENT PRIMARY KEY,
+    timestamp           DATETIME NOT NULL UNIQUE,
+    total_load_actual   FLOAT,
+    total_load_forecast FLOAT,
+    price_actual        FLOAT,
+    price_day_ahead     FLOAT
+);
+
+-- NORMALIZED TABLE 3: Generation per source per hour
+-- Junction table linking hourly_snapshot and energy_source
+-- One row per source per hour = 20 sources x 35060 hours = 701,280 rows
+CREATE TABLE IF NOT EXISTS generation_record (
+    record_id     INT AUTO_INCREMENT PRIMARY KEY,
+    snapshot_id   INT NOT NULL,
+    source_id     INT NOT NULL,
+    generation_mw FLOAT,
+    forecast_mw   FLOAT,
+    FOREIGN KEY (snapshot_id) REFERENCES hourly_snapshot(snapshot_id),
+    FOREIGN KEY (source_id)   REFERENCES energy_source(source_id)
+);
