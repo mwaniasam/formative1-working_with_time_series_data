@@ -7,7 +7,7 @@ USE energy_db;
 -- File must be copied to /var/lib/mysql-files/ first:
 -- sudo cp data/energy_dataset.csv /var/lib/mysql-files/
 -- All columns are VARCHAR to handle empty cells without errors
-LOAD DATA INFILE '/var/lib/mysql-files/energy_dataset.csv'
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/energy_dataset.csv'
 INTO TABLE raw_energy
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'

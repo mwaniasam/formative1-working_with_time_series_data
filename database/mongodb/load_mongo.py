@@ -32,26 +32,27 @@ docs = []
 for row in rows:
     # Calculate summary values
     renewable = (
-        (row["generation_biomass"]          or 0) +
-        (row["generation_geothermal"]        or 0) +
+        (row["generation_biomass"] or 0) +
+        (row["generation_geothermal"] or 0) +
         (row["generation_hydro_run_of_river"] or 0) +
         (row["generation_hydro_water_reservoir"] or 0) +
-        (row["generation_marine"]            or 0) +
-        (row["generation_other_renewable"]   or 0) +
-        (row["generation_solar"]             or 0) +
-        (row["generation_wind_offshore"]     or 0) +
-        (row["generation_wind_onshore"]      or 0)
+        (row["generation_marine"] or 0) +
+        (row["generation_other_renewable"] or 0) +
+        (row["generation_solar"] or 0) +
+        (row["generation_wind_offshore"] or 0) +
+        (row["generation_wind_onshore"] or 0)
     )
     fossil = (
-        (row["generation_fossil_brown_coal"]      or 0) +
+        (row["generation_fossil_brown_coal"] or 0) +
         (row["generation_fossil_coal_derived_gas"] or 0) +
-        (row["generation_fossil_gas"]             or 0) +
-        (row["generation_fossil_hard_coal"]       or 0) +
-        (row["generation_fossil_oil"]             or 0) +
-        (row["generation_fossil_oil_shale"]       or 0) +
-        (row["generation_fossil_peat"]            or 0)
+        (row["generation_fossil_gas"] or 0) +
+        (row["generation_fossil_hard_coal"] or 0) +
+        (row["generation_fossil_oil"] or 0) +
+        (row["generation_fossil_oil_shale"] or 0) +
+        (row["generation_fossil_peat"] or 0)
     )
-    total = renewable + fossil + (row["generation_nuclear"] or 0) + (row["generation_waste"] or 0) + (row["generation_other"] or 0) + (row["generation_hydro_pumped_storage_cons"] or 0)
+    total = renewable + fossil + (row["generation_nuclear"] or 0) + (row["generation_waste"] or 0) + (
+        row["generation_other"] or 0) + (row["generation_hydro_pumped_storage_cons"] or 0)
 
     doc = {
         "timestamp": row["timestamp"],
