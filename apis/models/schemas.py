@@ -1,9 +1,13 @@
 from pydantic import BaseModel
+from datetime import datetime
+from typing import Optional
+
+timestamp = datetime
 
 # SQL snapshot POST request
 
 class SnapshotCreate(BaseModel):
-    timestamp: str        
+    timestamp: timestamp       
     total_load_actual: float
 
 # Mongo record POST request
