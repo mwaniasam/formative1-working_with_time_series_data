@@ -5,13 +5,13 @@ from ..models.schemas import SnapshotCreate
 
 router = APIRouter(prefix="/sql")
 
-# GET: All snapshots (limit 100)
+# GET: All snapshots (default limit 100)
 
 @router.get("/snapshots")
-def get_snapshots():
+def get_snapshots(limit: int = 100):
     conn = get_mysql_connection()
     cursor = conn.cursor(dictionary=True)  
-    cursor.execute("SELECT * FROM hourly_snapshot ORDER BY timestamp DESC LIMIT 100")
+    cursor.execute("SELECT * FROM hourly_snapshot ORDER BY timestamp DESC LIMIT %s", (limit,))
     result = cursor.fetchall()
     conn.close()
     return result
@@ -20,11 +20,11 @@ def get_snapshots():
 # GET: Latest record
 
 @router.get("/latest")
-def latest_record():
+def latest_record(limit: int = 1):
     conn = get_mysql_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM hourly_snapshot ORDER BY timestamp DESC LIMIT 1")
-    result = cursor.fetchone()
+    cursor.execute("SELECT * FROM hourly_snapshot ORDER BY timestamp DESC LIMIT %s", (limit,))
+    result = cursor.fetchall()
     conn.close()
     return result
 
@@ -73,3 +73,19 @@ def delete_snapshot(snapshot_id: int):
     conn.commit()
     conn.close()
     return {"message": "Snapshot deleted successfully"}
+
+# PUT: Update snapshot by ID
+
+@router.put('/snapshot/{snapshot_id}')
+def update_snapshot(snapshot_id: int, snapshot: SnapshotCreate):
+    conn = get_mysql_connection()
+    cursor = conn.cursor()
+    query = """
+        UPDATE hourly_snapshot
+        SET timestamp = %s, total_load_actual = %s
+        WHERE snapshot_id = %s
+    """
+    cursor.execute(query, (snapshot.timestamp, snapshot.total_load_actual, snapshot_id))
+    conn.commit()
+    conn.close()
+    return {"message": "Snapshot updated successfully"}
