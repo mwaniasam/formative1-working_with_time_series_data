@@ -16,8 +16,8 @@ def serialize(doc):
 
 
 @router.get("/records")
-def get_records():
-    records = list(collection.find().limit(100))
+def get_records(limit: int = 100):
+    records = list(collection.find().limit(limit))
     return [serialize(r) for r in records]
 
 # GET: Latest record
@@ -57,3 +57,14 @@ def create_record(record: MongoRecordCreate):
 def delete_record(id: str):
     collection.delete_one({"_id": ObjectId(id)})
     return {"message": "Record deleted successfully"}
+
+
+@router.put("/record/{id}")
+def update_record(id: str, record: MongoRecordCreate):
+    update_doc = {
+        "timestamp": record.timestamp,
+        "load": {"actual": record.load_actual},
+        "price": {"actual": record.price_actual}
+    }
+    collection.update_one({"_id": ObjectId(id)}, {"$set": update_doc})
+    return {"message": "Record updated successfully"}
