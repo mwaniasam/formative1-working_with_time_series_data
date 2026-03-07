@@ -2,6 +2,9 @@ from fastapi import APIRouter
 from ..mongo_db import collection
 from ..models.schemas import MongoRecordCreate
 from bson import ObjectId
+from dateutil import parser as date_parser
+from fastapi import HTTPException
+from datetime import datetime
 
 router = APIRouter(prefix="/mongo")
 
@@ -12,11 +15,11 @@ def serialize(doc):
     doc["_id"] = str(doc["_id"])
     return doc
 
-# GET: first 100 records
+# GET: first 500 records
 
 
 @router.get("/records")
-def get_records(limit: int = 100):
+def get_records(limit: int = 500):
     records = list(collection.find().limit(limit))
     return [serialize(r) for r in records]
 
@@ -32,9 +35,22 @@ def latest_record():
 
 
 @router.get("/range")
-def records_range(start: str, end: str):
-    query = {"timestamp": {"$gte": start, "$lte": end}}
-    result = collection.find(query)
+def records_range(start: str, end: str, limit: int = 500):
+    # Parse start and end to datetime objects
+    try:
+        start_dt = date_parser.isoparse(start)
+        end_dt = date_parser.isoparse(end)
+    except ValueError:
+        raise HTTPException(
+            status_code=400, detail="Invalid date format. Use ISO8601.")
+
+    if start_dt > end_dt:
+        raise HTTPException(
+            status_code=400, detail="Start date must be before end date")
+
+    query = {"timestamp": {"$gte": start_dt, "$lte": end_dt}}
+    result = collection.find(query).sort("timestamp", 1).limit(limit)
+
     return [serialize(r) for r in result]
 
 # POST: Create a new record
