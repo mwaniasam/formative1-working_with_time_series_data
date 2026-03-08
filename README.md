@@ -113,7 +113,62 @@ load("database/mongodb/queries.js")
 
 ---
 
+## Running the API
+
+Make sure your `.env` file is set up and both MySQL and MongoDB are running, then:
+
+```bash
+uvicorn api.main:app --reload
+```
+
+The API will be available at `http://127.0.0.1:8000`
+
+Interactive docs (Swagger UI) are at `http://127.0.0.1:8000/docs`
+
+### Available endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | /sql/snapshots | Get latest 500 hourly snapshots from MySQL |
+| GET | /sql/latest | Get most recent MySQL record |
+| GET | /sql/range?start=&end= | Get MySQL records by date range |
+| POST | /sql/snapshot | Create a new snapshot in MySQL |
+| PUT | /sql/snapshot/{id} | Update a MySQL snapshot by ID |
+| DELETE | /sql/snapshot/{id} | Delete a MySQL snapshot by ID |
+| GET | /mongo/records | Get latest 500 records from MongoDB |
+| GET | /mongo/latest | Get most recent MongoDB record |
+| GET | /mongo/range?start=&end= | Get MongoDB records by date range |
+| POST | /mongo/record | Create a new MongoDB record |
+| PUT | /mongo/record/{id} | Update a MongoDB record by ObjectId |
+| DELETE | /mongo/record/{id} | Delete a MongoDB record by ObjectId |
+
+---
+
+## Running the Prediction Script
+
+The prediction script fetches live data from the API, preprocesses it, loads
+the trained LSTM model, and forecasts the next hour's electricity price in €/MWh.
+
+### Requirements
+- The API must be running (see above)
+- Trained model files must be present in the `models/` folder:
+  - `model_lstm_deep.keras`
+  - `scaler_minmax_X.pkl`
+  - `scaler_minmax_y.pkl`
+  - `feature_columns.json`
+
+### Run
+Open and run `scripts/Scripts.ipynb` in Jupyter or Google Colab.
+
+The final cell will print:
+```
+Predicted electricity price: XX.XX €/MWh
+```
+
+---
+
 ## Notes
 - The `.env` file is not tracked by git — create your own with your credentials
 - The dataset is not tracked by git — download it from Kaggle directly
 - All timestamps are stored in UTC
+- Trained model files are not tracked by git — run `notebooks/Pipeline_formative.ipynb` first to generate them

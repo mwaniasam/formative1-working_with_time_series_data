@@ -5,5 +5,9 @@ seaborn
 scikit-learn
 mysql-connector-python
 pymongo
-fastapi[standard]
+fastapi
 joblib
+python-dotenv
+python-dateutil
+tensorflow
+requests
