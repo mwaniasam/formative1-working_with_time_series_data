@@ -127,12 +127,12 @@ electricity price.
 
 ### 1. Start the API
 ```bash
-python -m uvicorn apis.main:app --reload
+uvicorn api.main:app --reload
 ```
 
 ### 2. Open the prediction notebook
 ```bash
-notebooks/Scripts.ipynb
+scripts/Scripts.ipynb
 ```
 
 ### 3. Run all cells
@@ -177,29 +177,6 @@ Interactive docs (Swagger UI) are at `http://127.0.0.1:8000/docs`
 | POST | /mongo/record | Create a new MongoDB record |
 | PUT | /mongo/record/{id} | Update a MongoDB record by ObjectId |
 | DELETE | /mongo/record/{id} | Delete a MongoDB record by ObjectId |
-
----
-
-## Running the Prediction Script
-
-The prediction script fetches live data from the API, preprocesses it, loads
-the trained LSTM model, and forecasts the next hour's electricity price in €/MWh.
-
-### Requirements
-- The API must be running (see above)
-- Trained model files must be present in the `models/` folder:
-  - `model_lstm_deep.keras`
-  - `scaler_minmax_X.pkl`
-  - `scaler_minmax_y.pkl`
-  - `feature_columns.json`
-
-### Run
-Open and run `scripts/Scripts.ipynb` in Jupyter or Google Colab.
-
-The final cell will print:
-```
-Predicted electricity price: XX.XX €/MWh
-```
 
 ---
 
