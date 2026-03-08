@@ -112,6 +112,42 @@ load("database/mongodb/queries.js")
 ```
 
 ---
+## Running the Prediction Script
+
+The prediction script fetches live data from the API, preprocesses it, 
+and uses the trained Ridge Regression model to forecast the next hour's 
+electricity price.
+
+### What You Need
+- The API must be running (see below)
+- Model files in the `models/` folder:
+  - `model_ridge.pkl`
+  - `scaler_standard.pkl`
+  - `feature_columns.json`
+
+### 1. Start the API
+```bash
+python -m uvicorn apis.main:app --reload
+```
+
+### 2. Open the prediction notebook
+```bash
+notebooks/Scripts.ipynb
+```
+
+### 3. Run all cells
+The script will:
+1. Fetch 500 records from `GET /mongo/records`
+2. Flatten the nested JSON into a flat DataFrame
+3. Apply feature engineering (lag features, moving averages, time features)
+4. Scale features using StandardScaler
+5. Load the Ridge Regression model and predict
+6. Output the predicted electricity price in €/MWh
+
+### Example Output
+```
+Predicted electricity price: 83.14 €/MWh
+```
 
 ## Notes
 - The `.env` file is not tracked by git — create your own with your credentials
